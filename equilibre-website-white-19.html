@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EquiLibre Technologies — The Next Generation of Algorithmic Trading</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+/* === RESET & BASE === */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #1a1a1a;
+  background: #ffffff;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; display: block; }
+
+/* === GRADIENT BACKGROUND SYSTEM (GREYSCALE) === */
+.gradient-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.gradient-bg .strips {
+  position: absolute;
+  inset: 0;
+  display: flex;
+}
+.gradient-bg .s {
+  flex: 1;
+}
+/* Greyscale vertical strips: dark left → light center-right → medium right */
+.gradient-bg .s:nth-child(1)  { background: linear-gradient(180deg, #e8e8e8, #d0d0d0, #b8b8b8, #c8c8c8, #dcdcdc, #ececec); }
+.gradient-bg .s:nth-child(2)  { background: linear-gradient(180deg, #eaeaea, #d4d4d4, #bfbfbf, #c5c5c5, #d8d8d8, #ededed); }
+.gradient-bg .s:nth-child(3)  { background: linear-gradient(180deg, #ececec, #d8d8d8, #c6c6c6, #c0c0c0, #d2d2d2, #eeeeee); }
+.gradient-bg .s:nth-child(4)  { background: linear-gradient(180deg, #eeeeee, #dcdcdc, #cccccc, #bababa, #cdcdcd, #efefef); }
+.gradient-bg .s:nth-child(5)  { background: linear-gradient(180deg, #f0f0f0, #e0e0e0, #d0d0d0, #b4b4b4, #c8c8c8, #f0f0f0); }
+.gradient-bg .s:nth-child(6)  { background: linear-gradient(180deg, #f1f1f1, #e2e2e2, #d4d4d4, #aeaeae, #c2c2c2, #f1f1f1); }
+.gradient-bg .s:nth-child(7)  { background: linear-gradient(180deg, #f2f2f2, #e4e4e4, #d6d6d6, #a8a8a8, #bcbcbc, #f2f2f2); }
+.gradient-bg .s:nth-child(8)  { background: linear-gradient(180deg, #f3f3f3, #e6e6e6, #d8d8d8, #a2a2a2, #b6b6b6, #f3f3f3); }
+.gradient-bg .s:nth-child(9)  { background: linear-gradient(180deg, #f4f4f4, #e0e0e0, #d0d0d0, #9c9c9c, #b0b0b0, #f4f4f4); }
+.gradient-bg .s:nth-child(10) { background: linear-gradient(180deg, #f3f3f3, #dedede, #cacaca, #969696, #aaaaaa, #f3f3f3); }
+.gradient-bg .s:nth-child(11) { background: linear-gradient(180deg, #f2f2f2, #dcdcdc, #c4c4c4, #909090, #a4a4a4, #f2f2f2); }
+.gradient-bg .s:nth-child(12) { background: linear-gradient(180deg, #f1f1f1, #dadada, #bebebe, #8a8a8a, #9e9e9e, #f1f1f1); }
+.gradient-bg .s:nth-child(13) { background: linear-gradient(180deg, #f0f0f0, #d8d8d8, #b8b8b8, #868686, #9a9a9a, #f0f0f0); }
+.gradient-bg .s:nth-child(14) { background: linear-gradient(180deg, #efefef, #d6d6d6, #b4b4b4, #8e8e8e, #a2a2a2, #efefef); }
+.gradient-bg .s:nth-child(15) { background: linear-gradient(180deg, #eeeeee, #d4d4d4, #b8b8b8, #989898, #aaaaaa, #eeeeee); }
+.gradient-bg .s:nth-child(16) { background: linear-gradient(180deg, #ededed, #d2d2d2, #c0c0c0, #a4a4a4, #b4b4b4, #ededed); }
+
+.gradient-bg .blur {
+  position: absolute;
+  inset: 0;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+/* Glass tile grid overlay (greyscale) */
+.gradient-bg .tiles {
+  position: absolute;
+  top: 8%;
+  left: 5%;
+  right: 5%;
+  bottom: 30%;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+  gap: 3px;
+  opacity: 0.5;
+}
+.gradient-bg .t {
+  border-radius: 5px;
+  background: rgba(0,0,0,0.02);
+  border: 1px solid rgba(0,0,0,0.03);
+}
+.gradient-bg .t:nth-child(1)  { grid-column: 1/3; grid-row: 1/3; background: rgba(0,0,0,0.06); }
+.gradient-bg .t:nth-child(2)  { grid-column: 3; grid-row: 1; background: rgba(0,0,0,0.04); }
+.gradient-bg .t:nth-child(3)  { grid-column: 4/5; grid-row: 1/3; background: rgba(0,0,0,0.05); }
+.gradient-bg .t:nth-child(4)  { grid-column: 5/7; grid-row: 1; background: rgba(0,0,0,0.03); }
+.gradient-bg .t:nth-child(5)  { grid-column: 7; grid-row: 1/3; background: rgba(0,0,0,0.04); }
+.gradient-bg .t:nth-child(6)  { grid-column: 3; grid-row: 2/4; background: rgba(0,0,0,0.05); }
+.gradient-bg .t:nth-child(7)  { grid-column: 5; grid-row: 2/3; background: rgba(0,0,0,0.03); }
+.gradient-bg .t:nth-child(8)  { grid-column: 6; grid-row: 2/4; background: rgba(0,0,0,0.04); }
+.gradient-bg .t:nth-child(9)  { grid-column: 1; grid-row: 3/5; background: rgba(0,0,0,0.06); }
+.gradient-bg .t:nth-child(10) { grid-column: 2; grid-row: 3; background: rgba(0,0,0,0.04); }
+.gradient-bg .t:nth-child(11) { grid-column: 4; grid-row: 3/5; background: rgba(0,0,0,0.05); }
+.gradient-bg .t:nth-child(12) { grid-column: 7; grid-row: 3/5; background: rgba(0,0,0,0.03); }
+.gradient-bg .t:nth-child(13) { grid-column: 2/4; grid-row: 4/6; background: rgba(0,0,0,0.04); }
+.gradient-bg .t:nth-child(14) { grid-column: 5/7; grid-row: 4/6; background: rgba(0,0,0,0.03); }
+
+.gradient-bg .fade-bottom {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 50%;
+  background: linear-gradient(180deg, transparent, rgba(255,255,255,0.6) 50%, #ffffff 100%);
+}
+.gradient-bg .fade-top {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 15%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.5), transparent);
+}
+
+/* === NAV === */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  padding: 20px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255,255,255,0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+.nav-logo {
+  display: flex;
+  align-items: center;
+}
+.nav-logo img {
+  height: 28px;
+  width: auto;
+}
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 36px;
+}
+.nav-links a {
+  font-size: 14px;
+  font-weight: 400;
+  color: rgba(0,0,0,0.55);
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: #1a1a1a; }
+.nav-cta {
+  padding: 9px 22px;
+  border: 1.5px solid rgba(0,0,0,0.25);
+  border-radius: 22px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s;
+  background: transparent;
+  color: #1a1a1a;
+}
+.nav-cta:hover {
+  background: rgba(0,0,0,0.05);
+  border-color: rgba(0,0,0,0.4);
+}
+
+/* === HERO === */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 140px 48px 80px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.hero-label {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(0,0,0,0.4);
+  margin-bottom: 24px;
+}
+.hero h1 {
+  font-size: clamp(42px, 6vw, 72px);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -2px;
+  max-width: 800px;
+  margin-bottom: 28px;
+  color: #1a1a1a;
+}
+.hero h1 span {
+  color: #555;
+}
+.hero-sub {
+  font-size: 18px;
+  font-weight: 300;
+  color: rgba(0,0,0,0.55);
+  line-height: 1.6;
+  max-width: 540px;
+  margin-bottom: 40px;
+}
+.hero-btns {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px 32px;
+  background: #1a1a1a;
+  color: white;
+  border-radius: 30px;
+  font-size: 15px;
+  font-weight: 600;
+  transition: transform 0.2s;
+}
+.btn-primary:hover { transform: scale(1.03); }
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 15px 32px;
+  border: 1.5px solid rgba(0,0,0,0.2);
+  border-radius: 30px;
+  font-size: 15px;
+  font-weight: 500;
+  color: rgba(0,0,0,0.7);
+  transition: all 0.2s;
+}
+.btn-secondary:hover { border-color: rgba(0,0,0,0.4); background: rgba(0,0,0,0.03); }
+
+/* === SECTIONS === */
+section {
+  position: relative;
+  z-index: 10;
+  padding: 100px 48px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.section-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #666;
+  margin-bottom: 16px;
+}
+.section-title {
+  font-size: clamp(32px, 4vw, 48px);
+  font-weight: 700;
+  letter-spacing: -1px;
+  line-height: 1.15;
+  margin-bottom: 20px;
+  max-width: 600px;
+  color: #1a1a1a;
+}
+.section-desc {
+  font-size: 16px;
+  font-weight: 300;
+  color: rgba(0,0,0,0.55);
+  line-height: 1.65;
+  max-width: 520px;
+  margin-bottom: 48px;
+}
+
+/* Card grid */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+.card {
+  background: rgba(0,0,0,0.02);
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 16px;
+  padding: 36px 28px;
+  transition: all 0.3s;
+}
+.card:hover {
+  background: rgba(0,0,0,0.04);
+  border-color: rgba(0,0,0,0.1);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.06);
+}
+.card-icon {
+  width: 48px; height: 48px;
+  border-radius: 12px;
+  background: rgba(0,0,0,0.04);
+  border: 1px solid rgba(0,0,0,0.08);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 20px;
+}
+.card-icon svg {
+  width: 22px; height: 22px;
+  stroke: #555;
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.card-img {
+  width: 100%;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  object-fit: cover;
+  aspect-ratio: 16/10;
+  filter: grayscale(80%);
+  transition: filter 0.3s;
+}
+.card:hover .card-img { filter: grayscale(0%); }
+
+/* Office photo grid */
+.office-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 12px;
+  margin-bottom: 48px;
+}
+.office-grid img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+  filter: grayscale(90%);
+  transition: filter 0.4s;
+}
+.office-grid img:hover { filter: grayscale(0%); }
+.office-grid .photo-hero {
+  grid-row: 1 / 3;
+  min-height: 360px;
+}
+.office-grid .photo-sm {
+  min-height: 170px;
+}
+.office-text {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+.office-text-col p {
+  font-size: 15px;
+  font-weight: 300;
+  color: rgba(0,0,0,0.6);
+  line-height: 1.65;
+  margin-bottom: 16px;
+}
+.office-text-col strong {
+  font-weight: 600;
+  color: #1a1a1a;
+}
+@media (max-width: 768px) {
+  .office-grid { grid-template-columns: 1fr; }
+  .office-grid .photo-hero { grid-row: auto; min-height: 220px; }
+  .office-text { grid-template-columns: 1fr; }
+}
+.card h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #1a1a1a;
+}
+.card p {
+  font-size: 14px;
+  font-weight: 300;
+  color: rgba(0,0,0,0.55);
+  line-height: 1.6;
+}
+
+/* Stats row */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 32px;
+  padding: 80px 0;
+  border-top: 1px solid rgba(0,0,0,0.06);
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+.stat-item { text-align: center; }
+.stat-num {
+  font-size: 48px;
+  font-weight: 700;
+  letter-spacing: -2px;
+  color: #333;
+  margin-bottom: 6px;
+}
+.stat-label {
+  font-size: 14px;
+  font-weight: 400;
+  color: rgba(0,0,0,0.45);
+}
+
+/* Team section */
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 24px;
+}
+.team-card {
+  background: rgba(0,0,0,0.02);
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 16px;
+  padding: 32px 24px;
+  text-align: center;
+  transition: all 0.3s;
+}
+.team-card:hover { background: rgba(0,0,0,0.04); box-shadow: 0 8px 30px rgba(0,0,0,0.05); }
+.team-avatar {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #bbb, #666);
+  margin: 0 auto 16px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; font-weight: 700;
+  color: white;
+}
+
+/* Advisory board */
+.advisory-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 24px;
+}
+.advisor-card {
+  background: rgba(0,0,0,0.02);
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 16px;
+  padding: 32px 20px;
+  text-align: center;
+  transition: all 0.3s;
+}
+.advisor-card:hover { background: rgba(0,0,0,0.04); box-shadow: 0 8px 30px rgba(0,0,0,0.05); }
+.advisor-photo {
+  width: 100px; height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 auto 16px;
+  filter: grayscale(100%);
+  transition: filter 0.3s;
+}
+.advisor-card:hover .advisor-photo { filter: grayscale(0%); }
+.advisor-card h4 { font-size: 16px; font-weight: 600; margin-bottom: 4px; color: #1a1a1a; }
+.advisor-card .role { font-size: 12px; color: #666; font-weight: 500; margin-bottom: 10px; }
+.advisor-card .bio { font-size: 12.5px; color: rgba(0,0,0,0.5); line-height: 1.55; }
+.team-card h4 { font-size: 16px; font-weight: 600; margin-bottom: 4px; color: #1a1a1a; }
+.team-card .role { font-size: 13px; color: #666; font-weight: 500; margin-bottom: 8px; }
+.team-card .bio { font-size: 13px; color: rgba(0,0,0,0.5); line-height: 1.5; }
+
+/* CTA section */
+.cta-section {
+  position: relative;
+  text-align: center;
+  padding: 120px 48px;
+}
+.cta-section .section-title { margin: 0 auto 16px; max-width: 700px; }
+.cta-section .section-desc { margin: 0 auto 40px; max-width: 500px; }
+
+/* Footer */
+footer {
+  position: relative;
+  z-index: 10;
+  border-top: 1px solid rgba(0,0,0,0.06);
+  padding: 48px;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.footer-left {
+  font-size: 13px;
+  color: rgba(0,0,0,0.4);
+}
+.footer-links {
+  display: flex;
+  gap: 28px;
+}
+.footer-links a {
+  font-size: 13px;
+  color: rgba(0,0,0,0.4);
+  transition: color 0.2s;
+}
+.footer-links a:hover { color: rgba(0,0,0,0.7); }
+
+/* White bg sections */
+.section-white-bg {
+  background: #ffffff;
+  position: relative;
+  z-index: 10;
+}
+
+/* Badges row */
+.badges-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 40px;
+}
+.badge-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: rgba(0,0,0,0.03);
+  border: 1px solid rgba(0,0,0,0.07);
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  color: #444;
+}
+.badge-pill svg {
+  width: 16px; height: 16px;
+  stroke: rgba(0,0,0,0.4);
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  nav { padding: 16px 24px; }
+  .nav-links { display: none; }
+  .hero, section { padding-left: 24px; padding-right: 24px; }
+  .stats { grid-template-columns: repeat(2, 1fr); gap: 24px; }
+  footer { flex-direction: column; gap: 20px; text-align: center; }
+  .footer-links { justify-content: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- ====== NAVIGATION ====== -->
+<nav>
+  <div class="nav-logo">
+    <img src="https://media.licdn.com/dms/image/v2/C561BAQHYNiFy6VUTKw/company-background_10000/company-background_10000/0/1642448255600/equilibre_technologies_cover?e=2147483647&v=beta&t=jKeHJW_uHGChW_aQJEecDXhZVRjyHSnTmOF8T0ZQRRM" alt="EquiLibre Technologies">
+  </div>
+  <div class="nav-links">
+    <a href="#technology">Approach</a>
+    <a href="#team">Team</a>
+    <a href="#careers">Careers</a>
+  </div>
+  <a href="#contact" class="nav-cta">Get in Touch</a>
+</nav>
+
+<!-- ====== HERO ====== -->
+<div style="position: relative; overflow: hidden;">
+  <div class="gradient-bg">
+    <div class="strips">
+      <div class="s"></div><div class="s"></div><div class="s"></div><div class="s"></div>
+      <div class="s"></div><div class="s"></div><div class="s"></div><div class="s"></div>
+      <div class="s"></div><div class="s"></div><div class="s"></div><div class="s"></div>
+      <div class="s"></div><div class="s"></div><div class="s"></div><div class="s"></div>
+    </div>
+    <div class="blur"></div>
+    <div class="tiles">
+      <div class="t"></div><div class="t"></div><div class="t"></div><div class="t"></div>
+      <div class="t"></div><div class="t"></div><div class="t"></div><div class="t"></div>
+      <div class="t"></div><div class="t"></div><div class="t"></div><div class="t"></div>
+      <div class="t"></div><div class="t"></div>
+    </div>
+    <div class="fade-top"></div>
+    <div class="fade-bottom"></div>
+  </div>
+
+  <div class="hero">
+    <div class="hero-label">The Next Generation of Algorithmic Trading</div>
+    <h1>Frontier AI Trading <span>Research Lab.</span></h1>
+    <div class="hero-sub">EquiLibre is building AI-powered trading systems that learn, adapt, and compete at the highest level — applying cutting-edge research from the world of poker AI and DeepMind to financial markets.</div>
+    <div class="hero-btns">
+      <a href="#technology" class="btn-primary">Explore Our Technology <span style="opacity:0.4">››</span></a>
+      <a href="#careers" class="btn-secondary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M8 12l4 4 4-4M12 8v8"/></svg>
+        Open Positions
+      </a>
+    </div>
+
+  </div>
+</div>
+
+<!-- ====== TECHNOLOGY ====== -->
+<div class="section-white-bg">
+<section id="technology">
+  <div class="section-label">Our Approach</div>
+  <div class="section-title">From poker AI to Wall Street</div>
+  <div class="section-desc">It all started with DeepStack - the first AI to beat humans in no-limit poker. Now we're applying those same principles where the stakes are much higher.</div>
+
+  <div class="card-grid">
+    <div class="card">
+      <img class="card-img" src="https://lh3.googleusercontent.com/sitesv/APaQ0SS9zvkfeiO1Pt5jADbyzvlyv0Z-aeHLq7HO1TgsN2EX0bhWTz461xn-pgvxOcEg2ZJDfGZufoBvHDMRI7AQUkA5T017PLln4QSkeguxF0ClFpY1Jn8OSKDyQI5G1A61NHqloQNB_DvTNaPROSFY_XDnScdLSWPP6rjK_ApPQDjPNXykJ5P5YW2uLqG6RDcWuE752X3A59vIrCdThDhViypCCJsErBRZDApfCLI=w1280" alt="Reinforcement Learning">
+      <h3>Reinforcement Learning</h3>
+      <p>Self-learning agents that continuously improve through interaction with live market environments, finding strategies humans would never discover.</p>
+    </div>
+    <div class="card">
+      <img class="card-img" src="https://lh3.googleusercontent.com/sitesv/APaQ0SQYGs28JQwtSZFCqOKMJP1_xbhK07L9Pjj0xPJLb88RCaRvd4Yg9bec6j5i_5VhdAS-JhteV-g5HhME0fKa3EfhkxiCUqRjef9oO9ppWx4TTFpPBe5n_qk1oNnvJfQ-Q4fCXvXZMogdefh3Hs69_fwijHdpC-xueG_5XmHtWeu6_3A3f85fgbPAkD0=w1280" alt="Game Theory">
+      <h3>Game Theory</h3>
+      <p>Nash equilibrium-seeking algorithms derived from our world-leading poker AI research, applied to adversarial market dynamics.</p>
+    </div>
+    <div class="card">
+      <img class="card-img" src="https://lh3.googleusercontent.com/sitesv/APaQ0STr7nry3k1GCSCL_3f5h6S5j8soYWoOyT6aqQSADachGEwgx5gWOElqJhdovpZRrScuQyIn0uJxG8mIMeSZ61-YxNsv7uZGidltoIqa1zRNm-8M2zuiFGVAt0gdFr8AJNgtXshvRrYPwqQQh4GSYp2uji6DHSJTEKBqzXJ7x9tIXouyXzmXDYjnp9UmavbUxz_R7VWwUA5Fnna_k1u2XRrOD0K1hlQGS5M9=w1280" alt="Algorithmic Execution">
+      <h3>Algorithmic Execution</h3>
+      <p>Sub-millisecond decision-making with robust risk management, operating across multiple asset classes and market conditions.</p>
+    </div>
+    <div class="card">
+      <img class="card-img" src="https://lh3.googleusercontent.com/sitesv/APaQ0SQiiiOvLqHwGyKHAegs8OE2cpFIHC08hOPX5mRz2aBku_8nxxLNDcAQcTxlcVcy6CDSERN_MErlW55-YyYOSboKWnamzxg3XLJLo5O6lv5wsmA4LSHGgzc04dkB1sNUFes0RWVq-lpEstenUu3FWCDib6Mz7C9lU7A0MfnXyoBhEZbbAK04wl3CFeAzXDCPbPfTUFkhTTPewUDsc9PCSPBxVFIOQKS_-jIC=w1280" alt="Continual Learning">
+      <h3>Continual Learning</h3>
+      <p>The world constantly changes, and so must our agents. Our agents need to adapt quickly to the ever changing environment and other market participants.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ====== STATS ====== -->
+<section>
+  <div class="stats">
+    <div class="stat-item">
+      <div class="stat-num">2022</div>
+      <div class="stat-label">Founded</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">30+</div>
+      <div class="stat-label">Team Members</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">10+</div>
+      <div class="stat-label">Published Papers</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">24/7</div>
+      <div class="stat-label">Market Coverage</div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== OFFICE ====== -->
+<section id="office">
+  <div class="section-label">Our Office</div>
+  <div class="section-title">Based in Prague, one of Europe's most beautiful cities</div>
+  <div class="section-desc">We chose Prague as our home — a city where centuries of history meet a thriving tech scene, world-class talent, and an unbeatable quality of life.</div>
+
+  <div class="office-grid">
+    <img class="photo-hero" src="https://images.unsplash.com/photo-1730671702641-2c8aa3f4bc23?w=900&q=80" alt="Prague Castle skyline">
+    <img class="photo-sm" src="https://images.unsplash.com/photo-1597698920385-091af7182b0f?w=600&q=80" alt="Prague Charles Bridge">
+    <img class="photo-sm" src="https://images.unsplash.com/photo-1649855414312-c1ee2d32487d?w=600&q=80" alt="Prague Old Town rooftops">
+  </div>
+
+  <div class="office-text">
+    <div class="office-text-col">
+      <p><strong>A city built for deep work.</strong> Prague consistently ranks among the top cities in Europe for quality of life, safety, and affordability. Its compact size, excellent public transport, and vibrant café culture make it the perfect place for a team that values focus and collaboration.</p>
+      <p><strong>World-class technical talent.</strong> Home to Charles University and the Czech Technical University, Prague produces exceptional mathematicians, computer scientists, and engineers — many of whom have gone on to lead research at DeepMind, Google, and top quantitative firms.</p>
+    </div>
+    <div class="office-text-col">
+      <p><strong>At the heart of Europe.</strong> Two hours from Berlin, Vienna, and Munich by air, Prague sits at the crossroads of European finance and technology. Our team works closely with partners across the continent while enjoying one of the world's most walkable and inspiring cities.</p>
+      <p><strong>A growing tech hub.</strong> The Czech Republic has become one of Central Europe's leading startup ecosystems, with a deep bench of AI and engineering talent, favorable business conditions, and a culture that rewards technical excellence.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ====== TEAM ====== -->
+<section id="team">
+  <div class="section-label">Founders</div>
+  <div class="section-title">World-class AI researchers and engineers</div>
+  <div class="section-desc">Founded by the authors of DeepStack (published in Science) and Player of Games, with backgrounds at Google DeepMind and IBM Research.</div>
+
+  <div class="team-grid">
+    <div class="team-card">
+      <img class="advisor-photo" src="https://lh3.googleusercontent.com/sitesv/APaQ0SQD-3w_3XDP1ntQeU445ocPh7LR600_SOzrdIrGl3qpPv00APk_p-235vvrv1RA8ycusdq56Q0N-3IyFuX-odpbh7rBDJE2sBjJWXitYAFR4IVzC7WFcsapVIR6z_NwLCbVaXPQgT6nXLZAFfam1SgrgE66wYBy0Y5xFA4cLmi862PABIiBGKwsmvw=w1280" alt="Martin Schmid, Ph.D.">
+      <h4>Martin Schmid, Ph.D.</h4>
+      <div class="role">CEO & Co-Founder</div>
+      <div class="bio">Ph.D. in algorithmic game theory. Previously project lead and senior research scientist at DeepMind, project lead and research scientist at IBM. Co-author of DeepStack and Player of Games.</div>
+    </div>
+    <div class="team-card">
+      <img class="advisor-photo" src="https://lh3.googleusercontent.com/sitesv/APaQ0SQj4XAo0KqUloU5BpRvsyXaIaoeqzc_4ijScZgOXSFxhZwHqg_KXsDuJGwo48vurTSjzeCFZ9UIJxIj0XwV7BKGoWhuC8mst8Z_yukV_HJXCYL0GiQx26fWV0g1BMHDfLaQVwNedfCZRFEks3VfqmKp8A-0aiqxmMglIGXiXpgz-yteIrm3nfOy=w1280" alt="Matej Moravcik, Ph.D.">
+      <h4>Matej Moravcik, Ph.D.</h4>
+      <div class="role">CSO & Co-Founder</div>
+      <div class="bio">Ph.D. in algorithmic game theory. Previously research scientist at DeepMind, research scientist at IBM. Co-author of DeepStack and Player of Games.</div>
+    </div>
+    <div class="team-card">
+      <img class="advisor-photo" src="https://lh3.googleusercontent.com/sitesv/APaQ0SRclrwqQR8AQWeh0am4-IaVtAUiBqGEf_oh2X1x_rfHTKm_g0UNbjH8W2U1TSdJggnvLf6WAk6gsUjXhh5ByRmgmSpqUYR4NphfwZ-j_bD5XYyE76EtdWvsmaQYYmDbfn3ymdxsqjSOoVIjqqCH7Xb-KgTL1AcFpdXBNFbSJYOqGnkfkk3vNnHA=w1280" alt="Rudolf Kadlec, Ph.D.">
+      <h4>Rudolf Kadlec, Ph.D.</h4>
+      <div class="role">CTO & Co-Founder</div>
+      <div class="bio">Ph.D. in episodic memory modeling. Previously tech lead and senior research engineer at DeepMind, senior research scientist at IBM. His work at IBM dealt with neural language modeling, and is referenced by the GPT family. Co-author of Player of Games.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== ADVISORY BOARD ====== -->
+<section id="advisory">
+  <div class="section-label">Advisory Board</div>
+  <div class="section-title">Guided by pioneers in AI</div>
+  <div class="section-desc">Our advisors include some of the most influential researchers in reinforcement learning, game theory, and artificial intelligence.</div>
+
+  <div class="advisory-grid">
+    <div class="advisor-card">
+      <img class="advisor-photo" src="https://lh3.googleusercontent.com/sitesv/APaQ0SQYU4n0L9W_upQsrqAYUookJq0UeXJq24kS3Wi6JpGpscuNkHt5ogeOX3fOPaKBSV8QQntdiePVx-1paus3Gbhp7R2r3JiqMTr667IBe_c-XhofLPX9V4wt5voM_GbQE-A62ux4i9OLV4O8uECLTFFMesTqaZA5TNgbt98xrM4YKh7RYQ7qR5AS=w1280" alt="Prof. Rich Sutton">
+      <h4>Prof. Rich Sutton</h4>
+      <div class="bio">Distinguished research scientist at DeepMind and a professor of computing science at the University of Alberta. Considered one of the founders of modern reinforcement learning.</div>
+    </div>
+    <div class="advisor-card">
+      <img class="advisor-photo" src="https://lh3.googleusercontent.com/sitesv/APaQ0ST0oe6z-CtL4ffaK8o3J-3rsYpGqd8l9h7TG3rKFhpEoE8RQBllQOp5lBBY9wp-g8wTw_O6rP4z9xygzAlBvmLB68lmkv_o_y5BmivuuJcGVPo_7mMnzb7PwJa1e6G-xhL1bczdSNcTB2HxP_Ke2InV_X5kgXItuYt6RSDNXQyOaOGzvSnzlGcmtb4=w1280" alt="Prof. Michael Bowling">
+      <h4>Prof. Michael Bowling</h4>
+      <div class="bio">Site Lead & Research Team Lead at the Edmonton DeepMind office and professor at the University of Alberta. Under his lead, the Computer Poker Research Group published two ground-breaking papers in Science.</div>
+    </div>
+    <div class="advisor-card">
+      <img class="advisor-photo" src="https://lh3.googleusercontent.com/sitesv/APaQ0STvE2ypYrJybjElQU6_G5q1CRgpl7zP0BoChZ96hI8504Of7_rNXfSpjnqAe2hWqTYuoOc1VMGPLLUqUk70bQftDDWeDqiNduzuEuNXdIdCSkQuuFEFiC8eoD_4s69a2W9sbXgR_y-RMVRjVw4yOcWu8dJYwuLXKhxoJPpUg8FdAmIptFL6PTE4=w1280" alt="Prof. Csaba Szepesvari">
+      <h4>Prof. Csaba Szepesvari</h4>
+      <div class="bio">Lead of the reinforcement learning theory team at DeepMind. Professor at the University of Alberta. Principal Investigator at Alberta Machine Intelligence Institute. World expert on bandit and reinforcement learning algorithms.</div>
+    </div>
+    <div class="advisor-card">
+      <img class="advisor-photo" src="https://lh3.googleusercontent.com/sitesv/APaQ0STg5WDSmui4LpB97EBGKpfQzN9v5PBeBF5LPRRm-Jr-Cy7pv1N0nvnhUOtUuMIN6ziBfzVhhpFGXxuRSRz83g1AtDE8enHgZYXaKdybXf61XxhqYSc1X1D2PjQWfLziUE0XrVwvUrCqlmISJGDMczqHd1axhCjmxuM2bu08rU9uEvQ3XJYEw8ahyNE=w1280" alt="Prof. Michal Pechoucek">
+      <h4>Prof. Michal Pechoucek</h4>
+      <div class="bio">Previously Chief Technology Officer at Avast technologies, the world's largest antivirus company, and professor at the Czech Technical University in Prague.</div>
+    </div>
+    <div class="advisor-card">
+      <img class="advisor-photo" src="https://lh3.googleusercontent.com/sitesv/APaQ0SS9nfxvoq2poMzAmkIlYC8eDwIKgcivYFZKcvAiy2fTgybz8i7nFFOQDlqHvyWuE62W-iQFriUnLJzHH8iBl0_uSZVP-QDcwrzn5u1A7R4MjKldHF7KxDxX1B4ZZrmMozLbry3v8atsqLnpYwBn5DXCS_5jI-_tZpeJAS06wfYgCOk3JahykJBy4Ek=w1280" alt="Murray Campbell">
+      <h4>Murray Campbell</h4>
+      <div class="bio">Distinguished Research Scientist at IBM Research. Co-author of Deep Blue, the first computer to defeat a world chess champion (Garry Kasparov).</div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== CTA ====== -->
+<section class="cta-section" id="careers">
+  <div class="section-label">Join Us</div>
+  <div class="section-title">Help us build the future of trading</div>
+  <div class="section-desc">We're a team of researchers and engineers who love hard problems. If you want to work at the intersection of AI and finance, we'd love to hear from you.</div>
+  <a href="#" class="btn-primary">View Open Positions <span style="opacity:0.4">››</span></a>
+</section>
+</div>
+
+<!-- ====== FOOTER ====== -->
+<div class="section-white-bg">
+<footer>
+  <div class="footer-left">© 2026 EquiLibre Technologies. All rights reserved.</div>
+  <div class="footer-links">
+    <a href="#">Privacy</a>
+    <a href="#">Terms</a>
+    <a href="#">LinkedIn</a>
+    <a href="#">Careers</a>
+    <a href="#" id="contact">Contact</a>
+  </div>
+</footer>
+</div>
+
+</body>
+</html>
